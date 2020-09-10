@@ -1,4 +1,9 @@
 from RFDSearch import *
+from export_browser import *
+# TODO:
+# sleep() is bad, replace these with Wait
+# using xPaths is also bad, replace with CSS selector
+# ^ should make headless browsers work properly
 
 
 class RFDScrape:
@@ -8,40 +13,37 @@ class RFDScrape:
     """
 
     def __init__(self):
-        # self.user_input, self.sort_by = _ask_user
-        self.user_input, self.sort_by = (UserInput('whatthefuck',
-                                         '2020-7-20',
-                                         '2020-8-18'),
-                               None)
+        self.user_input = self._ask_user()
         self.url = generate_url(self.user_input)
 
         self.search = RFDSearch(self.url)
         database = self.search.thread_database
 
-        if not RFD_results_empty(database, self.user_input):
-            # TODO: proceed to process database
-            pass
-        
+        if not rfd_results_empty(database, self.user_input):
+            ExportToHTML(database)
+
     def _ask_user(self):
         """
         Request the user to specify the query string,
         start date, and end date of search timeline.
         """
         q = input("Enter search query: ")
-        # TODO: convert the part after 'or'
-        tf = input("Enter start date " + EXTRA_INFO)
-        tt = input("Enter end date " + EXTRA_INFO)
-        user_input = UserInput(q, tf, tt) # named tuple, see: constants.py
+        print(FOR_USER)
 
-        # sort by: post date, upvote, score
-        sort_by = input("Sort by 'post date', 'upvote', 'score': ")
+        tf_valid = False
+        while not tf_valid:
+            tf = input("Enter start date " + EXTRA_INFO)
+            tf_valid = validate_date(tf)
+        tf = standardize_date(tf)
 
-        return user_input, sort_by
+        tt_valid = False
+        while not tt_valid:
+            tt = input("Enter end date " + EXTRA_INFO)
+            tt_valid = validate_date(tt)
+        tt = standardize_date(tt)
+
+        return UserInput(q, tf, tt)
+
 
 if __name__ == '__main__':
     r = RFDScrape()
-##    total_pages = r._total_pages()
-##    thread_data = {}
-##    curr_page_results = b.find_elements_by_xpath(RESULTS_LIST)
-##    t = RFDThread(b, curr_page_results[3])
-##    t_info = t._collect_thread_data()

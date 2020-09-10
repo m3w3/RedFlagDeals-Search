@@ -1,5 +1,4 @@
 from selenium.webdriver import Chrome
-from selenium.webdriver.remote.command import Command
 from time import sleep
 from RFDThread import *
 from browser_settings import *
@@ -14,6 +13,7 @@ class RFDSearch:
 
     def __init__(self, url):
         self.browser = Chrome(options=default_browser_options())
+        # self.browser.implicitly_wait(10)
         self.URL = url
         self.total = 0
         self.page_num = 1
@@ -24,7 +24,7 @@ class RFDSearch:
             self._aggregate_all_pages()
 
             print(f'Total results: {self.total}')
-            self.browser.close()
+            self.browser.quit()
 
     def _no_matches(self):
         """
@@ -32,7 +32,7 @@ class RFDSearch:
         """
         total_count_div = self.browser.find_element_by_xpath(TOTAL_SEARCH_COUNT)
         if total_count_div.text == '0':
-            self.browser.close()
+            self.browser.quit()
             return True
 
     def _total_pages(self):
@@ -49,7 +49,7 @@ class RFDSearch:
         """
         self.browser.get(self.URL + str(page_num))
         sleep(1)
-        
+
     def switch_to_main_window(self):
         """
         Switch the browser back to the first tab
@@ -68,11 +68,10 @@ class RFDSearch:
         """
         thread_title = result_div.text
         if thread_title not in self.thread_database:
-            print(f'{thread_title}\n')
             curr_thread = RFDThread(self.browser, result_div)
             sleep(1)
             self.thread_database[thread_title] = curr_thread.collect_data()
-            
+
             curr_thread.browser.close()
             self.switch_to_main_window()
 
@@ -81,7 +80,7 @@ class RFDSearch:
         Collect all search results on the current browser window.
         """
         curr_page_results = self.browser.find_elements_by_xpath(RESULTS_LIST)
-        print(f'total of {len(curr_page_results)} results \n')
+        # print(f'total of {len(curr_page_results)} results \n')
         self.total += len(curr_page_results)
         for result_div in curr_page_results:
             self.maybe_add_thread_data(result_div)
