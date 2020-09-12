@@ -13,6 +13,8 @@ pip install selenium
 
 Get the latest ChromeDriver here: https://sites.google.com/a/chromium.org/chromedriver/downloads
 
+The API for Python Webdriver can be found here: https://selenium-python.readthedocs.io/api.html
+
 # Features to Add/Implement (TODOs):
 - Use Wait instead of sleep()
 - Use CSS selector instead of xPath to retrieve web elements. This should allow the program to work properly in headless Chrome mode.
