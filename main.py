@@ -1,9 +1,5 @@
 from RFDSearch import *
 from export_browser import *
-# TODO:
-# sleep() is bad, replace these with Wait
-# using xPaths is also bad, replace with CSS selector
-# ^ should make headless browsers work properly
 
 
 class RFDScrape:
@@ -47,3 +43,4 @@ class RFDScrape:
 
 if __name__ == '__main__':
     r = RFDScrape()
+    d = r.search.thread_database

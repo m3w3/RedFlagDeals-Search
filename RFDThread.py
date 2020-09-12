@@ -1,4 +1,5 @@
 from selenium.webdriver.common.keys import Keys
+from time import sleep
 from constants import *
 from helper_functions import *
 
@@ -15,6 +16,7 @@ class RFDThread:
 
         self._new_tab_for_thread()
         self._go_to_page_one()
+        sleep(0.1)
 
     def _new_tab_for_thread(self):
         """
@@ -58,10 +60,30 @@ class RFDThread:
         3) thread's initial post time
         4) thread's total upvotes
         5) thread's total downvotes
+
+        For locked threads (aka ones unable to vote),
+        4) and 5) will be treated as 0.
         """
+        if self.thread_is_locked():
+            upvote, downvote = "0", "0"
+        else:
+            upvote = self.browser.find_element_by_xpath(UPVOTES).text
+            downvote = self.browser.find_element_by_xpath(DOWNVOTES).text
+
+        _post_time = self.browser.find_elements_by_xpath(POST_TIME_LIST)[0].text
         return Thread(self.browser.current_url,
                       self.browser.find_element_by_xpath(CATEGORIES).text,
-                      self.browser.find_elements_by_xpath(POST_TIME_LIST)[
-                          0].text,
-                      self.browser.find_element_by_xpath(UPVOTES).text,
-                      self.browser.find_element_by_xpath(DOWNVOTES).text)
+                      standardized_post_date(_post_time),
+                      upvote,
+                      downvote)
+
+    def thread_is_locked(self):
+        """
+        Check if the thread is currently locked.
+        Return True if it is.
+
+        This can be determined if the "lock" element contains texts.
+            - If it does, it's a regular thread
+            - If it's empty (i.e. ''), the thread is locked.
+        """
+        return self.browser.find_element_by_xpath(LOCKED).text == ''

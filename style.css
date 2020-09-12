@@ -1,0 +1,25 @@
+body {
+  font-family: Verdana, Geneva, sans-serif;
+}
+
+table {
+  border-spacing: 3;
+  width: 90%;
+  border: 1px solid grey;
+}
+
+th {
+  text-align: left;
+  padding: 15px;
+  background-color: #156ee0;
+  color: white;
+}
+
+td {
+  text-align: left;
+  padding: 10px;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2
+}

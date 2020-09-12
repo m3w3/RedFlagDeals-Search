@@ -1,6 +1,7 @@
 from collections import namedtuple
+import re
 from constants import *
-from datetime import date, timedelta
+from datetime import *
 
 """
 Helper functions for either RFDSearch or RFDThread.
@@ -49,12 +50,12 @@ def validate_date(input_date):
     """
     Date either must be in the format of either:
     1) YYYY-MM-DD
-    2) [digit][day/month/year], e.g. '1D' or '3M'
+    2) [digit][day/week/month/year], e.g. '1D', '2W', or '3M'
     """
     length = len(input_date)
     if length == 2 or length == 3:
         return (input_date[:-1].isdecimal() and
-                input_date[-1].lower() in ['d', 'm', 'y'])
+                input_date[-1].lower() in ['d', 'w', 'm', 'y'])
     elif length == 10:
         date_list = input_date.split('-')
         try:
@@ -71,8 +72,9 @@ def validate_date(input_date):
 def standardize_date(input_date):
     """
     Converts 1M -> the date that's 1 month before today's current date,
-    Or 30D -> the date that's 30 days before today's current date
-    Or 1Y -> the date that's 1Y before today's current date
+    Or 1W -> the date that's 7 days before today
+    Or 1M -> the date that's 30 days before today
+    Or 1Y -> the date that's 1Y before today
     ... etc.
 
     Return the exact date.
@@ -84,6 +86,31 @@ def standardize_date(input_date):
         return input_date
 
     alphabet = input_date.lower()[-1]  # i.e. '1D' --> 'd'
-    multipliers = {'d': 1, 'm': 30.4167, 'y': 365}
+    multipliers = {'d': 1, 'w': 7, 'm': 30.4167, 'y': 365}
     delta = timedelta(int(input_date[:-1]) * multipliers[alphabet])
     return str(date.today() - delta)
+
+
+def standardized_post_date(date_posted):
+    """
+    Converts the date in format of 'Sep 7th, 2020 9:55 pm'
+    --> '2020-09-07 21:55'
+
+    Return the converted value.
+
+    Note that the provided month will always be the first 3 alphabet
+    of the corresponding month (i.e. Feb., Mar., Apr., ...).
+    """
+    # ['Sep', '7th', '2020', '9:55 pm']
+    _datetime = date_posted.replace(',', '').split(maxsplit=3)
+
+    # '2020 09 07 9:55 pm'
+    yyyy_mm_dd_t = " ".join([_datetime[2],
+                             DATE_MAP[_datetime[0]],
+                             re.sub("[^0-9]", "", _datetime[1]),
+                             _datetime[-1]])
+
+    _datetime = datetime.strptime(yyyy_mm_dd_t,
+                                  '%Y %m %d %I:%M %p')
+
+    return f'{datetime.strftime(_datetime, "%Y-%m-%d %H:%M")}'

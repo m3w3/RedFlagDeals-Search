@@ -1,5 +1,4 @@
 from selenium.webdriver import Chrome
-from time import sleep
 from RFDThread import *
 from browser_settings import *
 from constants import *
@@ -22,8 +21,6 @@ class RFDSearch:
         self._go_to_page(self.page_num)
         if not self._no_matches():
             self._aggregate_all_pages()
-
-            print(f'Total results: {self.total}')
             self.browser.quit()
 
     def _no_matches(self):
@@ -48,7 +45,7 @@ class RFDSearch:
         Go to the search result's given page number, as specified by input.
         """
         self.browser.get(self.URL + str(page_num))
-        sleep(1)
+        sleep(0.5)
 
     def switch_to_main_window(self):
         """
@@ -69,7 +66,7 @@ class RFDSearch:
         thread_title = result_div.text
         if thread_title not in self.thread_database:
             curr_thread = RFDThread(self.browser, result_div)
-            sleep(1)
+            # sleep(0.5)
             self.thread_database[thread_title] = curr_thread.collect_data()
 
             curr_thread.browser.close()

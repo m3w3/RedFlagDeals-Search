@@ -20,7 +20,7 @@ class ExportToHTML:
 
 def make_table_header(element):
     """
-    Add the HTML table header tag to the element,
+    Add the HTML table header tag '<th></th>' to the element,
     which should be a string.
     """
     assert type(element) == str
@@ -30,7 +30,7 @@ def make_table_header(element):
 
 def make_table_data(element):
     """
-    Add the HTML table data tag to the element,
+    Add the HTML table data tag '<td></td>' to the element,
     which should be a string.
     """
     assert type(element) == str
@@ -51,22 +51,24 @@ def make_html_link(url, text):
     return "".join(HTML_HYPERLINK)
 
 
-def make_html_row(title, data, data_row=True):
+def make_html_row(col1_data, remaining_data, first_row=False):
     """
-    Given a thread_title and an iterable thread_data,
+    *This is just 1 row.
+
+    Given a column 1 data and an iterable remaining columns,
     add a HTML table data tag to each
     and arrange all of them into 1 HTML table row.
     """
-    if data_row:
-        assert type(data) == Thread
-        title_with_link = make_html_link(data.url, title)
-        HTML_TABLE_ROW[1] = "".join([make_table_data(title_with_link)] +
-                                    [make_table_data(data[i])
-                                     for i in range(1, len(data))])
+    if first_row:  # this contains only headers for rest of the data
+        HTML_TABLE_ROW[1] = "".join([make_table_header(col1_data)] +
+                                    [make_table_header(remaining_data[i])
+                                     for i in range(len(remaining_data))])
     else:
-        HTML_TABLE_ROW[1] = "".join([make_table_header(title)] +
-                                    [make_table_header(data[i])
-                                     for i in range(len(data))])
+        assert type(remaining_data) == Thread
+        hyperlink_title = make_html_link(remaining_data.url, col1_data)
+        HTML_TABLE_ROW[1] = "".join([make_table_data(hyperlink_title)] +
+                                    [make_table_data(remaining_data[i])
+                                     for i in range(1, len(remaining_data))])
     return "".join(HTML_TABLE_ROW)
 
 
@@ -74,9 +76,6 @@ def make_html(rfd_data):
     """
     Create the HTML document, given {thread_title: Thread}.
     """
-    html_start = "<html>\n<table>"
-    table_header = make_html_row(HEADER_0, HEADER_1, data_row=False)
-    table_data = [make_html_row(title, rfd_data[title])
-                  for title in rfd_data]
-    html_end = "\n</table>\n</html>"
-    return "".join([html_start, table_header] + table_data + [html_end])
+    header_row = [make_html_row(HEADER_0, HEADER_1, first_row=True)]
+    data_row = [make_html_row(title, rfd_data[title]) for title in rfd_data]
+    return "".join(HTML_HEAD + header_row + data_row + HTML_END)
