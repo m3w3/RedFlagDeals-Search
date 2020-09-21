@@ -22,7 +22,6 @@ class RFDScrape:
 
         if not rfd_results_empty(database, self.user_input[:-1]):
             ExportToHTML(database)
-            print(len(database))
 
     def _ask_user(self):
         """

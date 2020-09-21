@@ -23,8 +23,7 @@ POST_TIME_LIST = '//span[@class="dateline_timestamp"]'
 EXTRA_INFO = '(YYYY-MM-DD, or "[integer][D/W/M/Y]" i.e. 2W): '
 
 # Default RedFlagDeals search URL to modify
-TT = str(date.today())
-URL_ = f'https://www.redflagdeals.com/search/#!/q=Q/t=custom/s=forums/tt={TT}/tf=TF/p='
+URL_ = f'https://www.redflagdeals.com/search/#!/q=Q/t=custom/s=forums/tt={str(date.today())}/tf=TF/p='
 # Default URL of the script Sortable (used to sort HTML tables)
 SORTABLE = 'https://www.kryogenix.org/code/browser/sorttable/sorttable.js'
 # Used by export_browser.py
@@ -65,4 +64,4 @@ For example:
 """
 
 FOR_USER_2 = ("Disregard query results from comments "
-              + "and search your query in thread titles only? (T/F)")
+              + "and search your query in thread titles only? (T/F) ")
