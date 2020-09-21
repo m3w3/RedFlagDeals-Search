@@ -78,4 +78,4 @@ def make_html(rfd_data):
     """
     header_row = [make_html_row(HEADER_0, HEADER_1, first_row=True)]
     data_row = [make_html_row(title, rfd_data[title]) for title in rfd_data]
-    return "".join(HTML_HEAD + header_row + data_row + HTML_END)
+    return "".join(HTML_HEAD + header_row + data_row + HTML_ALERT + HTML_END)

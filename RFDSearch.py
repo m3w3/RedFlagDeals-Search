@@ -10,17 +10,16 @@ class RFDSearch:
     (the individual search pages' interface)
     """
 
-    def __init__(self, url):
+    def __init__(self, url, query, search_in_titles):
         self.browser = Chrome(options=default_browser_options())
         # self.browser.implicitly_wait(10)
         self.URL = url
-        self.total = 0
         self.page_num = 1
         self.thread_database = {}
 
         self._go_to_page(self.page_num)
         if not self._no_matches():
-            self._aggregate_all_pages()
+            self._aggregate_all_pages(query, search_in_titles)
             self.browser.quit()
 
     def _no_matches(self):
@@ -52,51 +51,54 @@ class RFDSearch:
         Switch the browser back to the first tab
         (aka the one with all the search results).
         """
-        main = self.browser.window_handles[0]
-        self.browser.switch_to.window(main)
+        main_window = self.browser.window_handles[0]
+        self.browser.switch_to.window(main_window)
 
-    def maybe_add_thread_data(self, result_div):
+    def maybe_add_thread_data(self, result_div, query, search_in_titles):
         """
         Conditionally add the new thread's info if the thread
         doesn't currently exist in self.thread_database.
+
+        search_in_titles option is used to specify whether to include threads
+        where the title doesn't contain the search query.
 
         Note that the thread will be opened in a new tab as a result of
         CTRL + 'T' on result_div, then closed after this method finishes.
         """
         thread_title = result_div.text
+        if search_in_titles: # only search query in thread titles
+            if query.upper() not in thread_title.upper(): return
         if thread_title not in self.thread_database:
             curr_thread = RFDThread(self.browser, result_div)
-            # sleep(0.5)
             self.thread_database[thread_title] = curr_thread.collect_data()
 
             curr_thread.browser.close()
             self.switch_to_main_window()
 
-    def _aggregate_curr_page_results(self):
+    def _aggregate_curr_page_results(self, query, search_in_titles):
         """
         Collect all search results on the current browser window.
+
+        search_in_titles option is used to specify whether to include threads
+        where the title doesn't contain the search query.
         """
         curr_page_results = self.browser.find_elements_by_xpath(RESULTS_LIST)
         # print(f'total of {len(curr_page_results)} results \n')
-        self.total += len(curr_page_results)
         for result_div in curr_page_results:
-            self.maybe_add_thread_data(result_div)
+            self.maybe_add_thread_data(result_div, query, search_in_titles)
 
-    def _aggregate_all_pages(self):
+    def _aggregate_all_pages(self, query, search_in_titles):
         """
         Collect all search results (as list items) that appear in RFD search.
         Update self.thread_data, with key=title,
         and value=NamedTuple(URL, category, post date, upvote, downvote).
 
-        Note:
-        RFD search results has this weird bug where it'll say the results
-        take up 'n' number of pages, but in fact it might take up
-        less than 'n' (i.e. 20 pages, but only 14 contain results,
-        and the remaining 6 pages are just empty).
+        search_in_titles option is used to specify whether to include threads
+        where the title doesn't contain the search query.
         """
         total_pages = self._total_pages()
         while self.page_num <= total_pages:
-            self._aggregate_curr_page_results()
+            self._aggregate_curr_page_results(query, search_in_titles)
 
             # check if it's possible to visit the next page
             self.page_num += 1

@@ -8,8 +8,10 @@ Helper functions for either RFDSearch or RFDThread.
 """
 
 # Custom NamedTuple
-Thread = namedtuple('Thread', 'url category date upvote downvote')
-UserInput = namedtuple('UserInput', 'search_query start_date end_date')
+Thread = namedtuple('Thread',
+                    'url category date upvote downvote')
+UserInput = namedtuple('UserInput',
+                       'search_query start_date search_in_titles')
 
 
 def remove_post_id_from_url(url):
@@ -24,7 +26,8 @@ def generate_url(user_input):
     Generate the RedFlagDeals search page URL based on the user's
     input for search term, start date, and end date.
     """
-    correspond = zip(['Q', 'TF', 'TT'], user_input)
+    assert(len(user_input)) == 2
+    correspond = zip(['Q', 'TF'], user_input)
     url = URL_
     for key, value in correspond:
         url = url.replace(key, value)
@@ -37,12 +40,11 @@ def rfd_results_empty(database, user_input):
 
     Return an error message to user in case of empty search results.
     """
-    assert type(user_input) == UserInput
     if bool(database):
         return False
     else:
         print(f"No results for '{user_input[0]}' " +
-              f"between dates {user_input[1]} and {user_input[2]}")
+              f"between dates {user_input[1]} and {TT}")
         return True
 
 
@@ -114,3 +116,11 @@ def standardized_post_date(date_posted):
                                   '%Y %m %d %I:%M %p')
 
     return f'{datetime.strftime(_datetime, "%Y-%m-%d %H:%M")}'
+
+
+def validate_in_title_option(condition):
+    """
+    The condition must be either 'T' or 'F'.
+    Return True if this is the case. Otherwise, return False.
+    """
+    return condition == 'T' or condition == 'F'

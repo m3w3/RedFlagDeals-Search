@@ -10,13 +10,19 @@ class RFDScrape:
 
     def __init__(self):
         self.user_input = self._ask_user()
-        self.url = generate_url(self.user_input)
+        assert type(self.user_input) == UserInput
+        (self.url,
+         search_in_titles,
+         query) = (generate_url(self.user_input[:-1]),
+                   self.user_input[-1],
+                   self.user_input[0])
 
-        self.search = RFDSearch(self.url)
+        self.search = RFDSearch(self.url, query, search_in_titles)
         database = self.search.thread_database
 
-        if not rfd_results_empty(database, self.user_input):
+        if not rfd_results_empty(database, self.user_input[:-1]):
             ExportToHTML(database)
+            print(len(database))
 
     def _ask_user(self):
         """
@@ -28,17 +34,17 @@ class RFDScrape:
 
         tf_valid = False
         while not tf_valid:
-            tf = input("Enter start date " + EXTRA_INFO)
+            tf = input("Indicate how long ago the thread can be posted from "
+                       + EXTRA_INFO)
             tf_valid = validate_date(tf)
         tf = standardize_date(tf)
 
-        tt_valid = False
-        while not tt_valid:
-            tt = input("Enter end date " + EXTRA_INFO)
-            tt_valid = validate_date(tt)
-        tt = standardize_date(tt)
-
-        return UserInput(q, tf, tt)
+        in_title_valid = False
+        while not in_title_valid:
+            search_in_titles = input(FOR_USER_2)
+            in_title_valid = validate_in_title_option(search_in_titles)
+        
+        return UserInput(q, tf, search_in_titles)
 
 
 if __name__ == '__main__':

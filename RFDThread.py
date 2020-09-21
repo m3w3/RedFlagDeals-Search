@@ -16,7 +16,7 @@ class RFDThread:
 
         self._new_tab_for_thread()
         self._go_to_page_one()
-        sleep(0.1)
+        sleep(0.5)
 
     def _new_tab_for_thread(self):
         """
