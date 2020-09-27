@@ -42,6 +42,7 @@ class RFDScrape:
         while not in_title_valid:
             search_in_titles = input(FOR_USER_2)
             in_title_valid = validate_in_title_option(search_in_titles)
+        search_in_titles = True if search_in_titles == 'T' else False
         
         return UserInput(q, tf, search_in_titles)
 

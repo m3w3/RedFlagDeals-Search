@@ -11,6 +11,5 @@ def default_browser_options():
     opts = Options()
     opts.add_argument('--ignore-certificate-errors')
     opts.add_argument('--ignore-ssl-errors')
-    # TODO: add support for headless option
-    opts.headless = False
+    opts.headless = True
     return opts

@@ -4,7 +4,6 @@ Pre-specified xPaths for RedFlagDeals website and other constants.
 from datetime import *
 
 # xpaths for unique elements
-CATEGORIES = '//li[@class="thread_category"]/a[@rel="nofollow"]'
 UPVOTES = '//div[@class="thread_header_actions_container"]//span[' \
           '@class="upvote_count"] '
 DOWNVOTES = '//div[@class="thread_header_actions_container"]//span[' \
@@ -12,6 +11,7 @@ DOWNVOTES = '//div[@class="thread_header_actions_container"]//span[' \
 TOTAL_SEARCH_COUNT = '//span[@id="section_link_nb_forums"]'
 TOTAL_PAGES = '//li[@id="pagination_forums"]//span[@class="pagination_total"]'
 LOCKED = '//div[@class="thread_header_endmatter"]'
+METADATA = '//meta[@name = "keywords"]'
 
 # xpaths for non-unique elements
 RESULTS_LIST = '//h2[@class="title"]/a[@class="search"]'
@@ -19,11 +19,16 @@ FIRST_PAGE_LIST = '//a[@class="pagination_first pagination_button"]'
 PAGE_NUM_LIST = '//a[@class="pagination_menu_trigger"]'
 POST_TIME_LIST = '//span[@class="dateline_timestamp"]'
 
+# JavaScript to inject to browser
+DISPLAY_DATE = 'document.querySelectorAll("section.post_dateline")[' \
+               '0].style.display = "Block"; '
+
 # String add-on for user prompt
 EXTRA_INFO = '(YYYY-MM-DD, or "[integer][D/W/M/Y]" i.e. 2W): '
 
 # Default RedFlagDeals search URL to modify
-URL_ = f'https://www.redflagdeals.com/search/#!/q=Q/t=custom/s=forums/tt={str(date.today())}/tf=TF/p='
+URL_ = f'https://www.redflagdeals.com/search/#!/q=Q/t=custom/s=forums/tt=' + \
+       f'{str(date.today())}/tf=TF/p='
 # Default URL of the script Sortable (used to sort HTML tables)
 SORTABLE = 'https://www.kryogenix.org/code/browser/sorttable/sorttable.js'
 # Used by export_browser.py
@@ -42,7 +47,8 @@ HTML_ALERT = ['\n    <script>',
               '\n        window.alert("Click on table header to sort!");',
               '\n    </script>']
 HTML_END = ['\n    </table>',
-            '\n    <script type="text/javascript" src="' + SORTABLE + '"></script>',
+            ('\n    <script type="text/javascript" src="'
+             + SORTABLE + '"></script>'),
             '\n</body>', '\n</html>']
 
 # Hashtable for dates

@@ -70,9 +70,18 @@ class RFDThread:
             upvote = self.browser.find_element_by_xpath(UPVOTES).text
             downvote = self.browser.find_element_by_xpath(DOWNVOTES).text
 
-        _post_time = self.browser.find_elements_by_xpath(POST_TIME_LIST)[0].text
+        # The div for post time needs to have its display set to 'Block'
+        self.browser.execute_script(DISPLAY_DATE)
+        _post_time = \
+            "".join([e.text for e in
+                     self.browser.find_elements_by_xpath(POST_TIME_LIST)])
+
+        # Obtain the category data from the webpage's meta data
+        meta_data = self.browser.find_elements_by_xpath(METADATA)
+        _category = meta_data[0].get_attribute('content').split(',')[-1]
+        
         return Thread(self.browser.current_url,
-                      self.browser.find_element_by_xpath(CATEGORIES).text,
+                      _category,
                       standardized_post_date(_post_time),
                       upvote,
                       downvote)

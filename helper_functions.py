@@ -44,7 +44,7 @@ def rfd_results_empty(database, user_input):
         return False
     else:
         print(f"No results for '{user_input[0]}' " +
-              f"between dates {user_input[1]} and {TT}")
+              f"between {user_input[1]} and today.")
         return True
 
 

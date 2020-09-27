@@ -68,6 +68,7 @@ class RFDSearch:
         thread_title = result_div.text
         if search_in_titles: # only search query in thread titles
             if query.upper() not in thread_title.upper(): return
+
         if thread_title not in self.thread_database:
             curr_thread = RFDThread(self.browser, result_div)
             self.thread_database[thread_title] = curr_thread.collect_data()
@@ -83,7 +84,7 @@ class RFDSearch:
         where the title doesn't contain the search query.
         """
         curr_page_results = self.browser.find_elements_by_xpath(RESULTS_LIST)
-        # print(f'total of {len(curr_page_results)} results \n')
+        # print(f'Total of {len(curr_page_results)} results on page {self.page_num} \n')
         for result_div in curr_page_results:
             self.maybe_add_thread_data(result_div, query, search_in_titles)
 
